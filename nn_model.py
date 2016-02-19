@@ -7,12 +7,13 @@ import numbers
 import lasagne
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
+from lasagne.layers import DropoutLayer
 from lasagne import nonlinearities
 from nolearn.lasagne import NeuralNet
 import numpy as np
 import pandas as pd
 
-NODES=20
+NODES=10
 
 def build_nn(df=None, class_column_name=None):
     '''
@@ -49,12 +50,13 @@ def build_nn(df=None, class_column_name=None):
     l = InputLayer(shape=(None, x.shape[1]))
 
     l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
-
+    #l = DropoutLayer(l, p=.2)
+    #l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
 
     l = DenseLayer(l, num_units=len(np.unique(y)),
                    nonlinearity=nonlinearities.softmax)
     net = NeuralNet(l, update_learning_rate=0.5, verbose=1,
-                    max_epochs=1000)
+                    max_epochs=100000)
     net.fit(x, y)
     print(net.score(x, y))
 
