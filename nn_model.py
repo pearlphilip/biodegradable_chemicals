@@ -1,6 +1,6 @@
-'''
+"""
 Construct a neural network model from a data frame
-'''
+"""
 
 import numbers
 
@@ -13,16 +13,17 @@ from nolearn.lasagne import NeuralNet
 import numpy as np
 import pandas as pd
 
-NODES=10
+NODES = 10
+
 
 def build_nn(df=None, class_column_name=None):
-    '''
+    """
     Construct a classification neural network model from input dataframe
     
     Parameters:
         df : input dataframe
         class_column_name : identity of the column in df with class data
-    '''
+    """
 
     # Type check inputs for sanity
     if df is None:
@@ -35,7 +36,7 @@ def build_nn(df=None, class_column_name=None):
         raise TypeError('class_column_name is not a string')
     if class_column_name not in df.columns:
         raise ValueError('class_column_name (%s) is not a valid column name'
-                         % (class_column_name))
+                         % class_column_name)
 
     df = df.sample(frac=1).reset_index(drop=True)
 
@@ -50,8 +51,8 @@ def build_nn(df=None, class_column_name=None):
     l = InputLayer(shape=(None, x.shape[1]))
 
     l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
-    #l = DropoutLayer(l, p=.2)
-    #l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
+    # l = DropoutLayer(l, p=.2)
+    # l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
 
     l = DenseLayer(l, num_units=len(np.unique(y)),
                    nonlinearity=nonlinearities.softmax)
@@ -59,4 +60,3 @@ def build_nn(df=None, class_column_name=None):
                     max_epochs=100000)
     net.fit(x, y)
     print(net.score(x, y))
-
