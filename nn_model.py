@@ -69,7 +69,7 @@ def build_nn(df=None, class_column_name=None):
 
     # l = InputLayer(shape=(None, x.shape[1]))
 
-    #l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
+    # l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
     # l = DropoutLayer(l, p=.2)
     # l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
 
