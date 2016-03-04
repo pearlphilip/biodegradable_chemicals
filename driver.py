@@ -14,7 +14,7 @@ def main():
     Entry point for all code
     '''
     print("starting up")
-    df = format_data.read_data('data/biodeg.csv')
+    df = format_data.read_data('data/biodeg.csv', 'data/meta_info.xlsx')
     df = transform.transform(df, 'class')
     nn_model.build_nn(df, 'class')
 
