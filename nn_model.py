@@ -2,18 +2,16 @@
 Construct a neural network model from a data frame
 """
 
-import numbers
-
-import lasagne
-from lasagne.layers import DenseLayer
-from lasagne.layers import InputLayer
-from lasagne.layers import DropoutLayer
-from lasagne import nonlinearities
-from nolearn.lasagne import NeuralNet
 import numpy as np
 import pandas as pd
+from lasagne import nonlinearities
+from lasagne.layers import DenseLayer
+from lasagne.layers import InputLayer
+from nolearn.lasagne import NeuralNet
+from sklearn.cross_validation import train_test_split
 
 NODES = 10
+TEST_SIZE = 0.2
 
 
 def build_nn(df=None, class_column_name=None):
@@ -39,12 +37,13 @@ def build_nn(df=None, class_column_name=None):
                          % class_column_name)
 
     df = df.sample(frac=1).reset_index(drop=True)
+    df_train, df_test = train_test_split(df, TEST_SIZE)
 
     # Remove the classification column from the dataframe
-    x = df.copy()
+    x = df_train.copy()
     x.drop(class_column_name, axis=1, inplace=True)
     x = x.values
-    y = df[class_column_name].values
+    y = df_train[class_column_name].values
     y = y.astype(np.int32)
 
     # Create classification model
