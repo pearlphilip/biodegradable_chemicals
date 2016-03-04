@@ -54,28 +54,24 @@ def build_nn(df=None, class_column_name=None):
 			      ('output', DenseLayer)],
 		    input_shape = (None, x_train.shape[1]),
                     hidden0_num_units = NODES,
-                    hidden0_nonlinearity = nonlinearities.sigmoid,
+                    hidden0_nonlinearity = nonlinearities.softmax,
                     hidden1_num_units = NODES,
-                    hidden1_nonlinearity = nonlinearities.sigmoid,
+                    hidden1_nonlinearity = nonlinearities.softmax,
                     output_num_units = len(np.unique(y_train)),
-                    output_nonlinearity = nonlinearities.linear,
-                    update_learning_rate = 0.5,
+                    output_nonlinearity = nonlinearities.softmax,
+                    update_learning_rate = 0.1,
                     verbose = 1,
-                    max_epochs = 1000)
+                    max_epochs = 100)
 
-    param_grid = {'hidden0_num_units':[4, 17, 25, 32]}
+    param_grid = {'hidden0_num_units': [4, 17, 25],
+                  'higgen0_nonlinearity': 
+                  [nonlinearities.sigmoid, nonlinearities.softmax],
+                  'hidden1_num_units': [4, 17, 25],
+                  'higgen1_nonlinearity': 
+                  [nonlinearities.sigmoid, nonlinearities.softmax],
+                  'update_learning_rate': [0.01, 0.1, 0.5]}
     grid_search = GridSearchCV(net, param_grid, verbose=0)
-    grid_search.fit(x_train,y_train)
+    grid_search.fit(x_train, y_train)
 
-    # l = InputLayer(shape=(None, x.shape[1]))
-
-    # l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
-    # l = DropoutLayer(l, p=.2)
-    # l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
-
-    #l = DenseLayer(l, num_units=len(np.unique(y)),
-     #              nonlinearity=nonlinearities.softmax)
-    #net = NeuralNet(l, update_learning_rate=0.5, verbose=1,
-    #                max_epochs=100000)
     #net.fit(x_train, y_train)
     # print(net.score(x_train, y_train))
