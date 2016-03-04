@@ -37,13 +37,13 @@ def build_nn(df=None, class_column_name=None):
                          % class_column_name)
 
     df = df.sample(frac=1).reset_index(drop=True)
-    df_train, df_test = train_test_split(df, TEST_SIZE)
+    # df_train, df_test = train_test_split(df, TEST_SIZE)
 
     # Remove the classification column from the dataframe
-    x = df_train.copy()
+    x = df.copy()
     x.drop(class_column_name, axis=1, inplace=True)
     x = x.values
-    y = df_train[class_column_name].values
+    y = df[class_column_name].values
     y = y.astype(np.int32)
 
     # Create classification model
