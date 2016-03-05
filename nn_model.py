@@ -9,9 +9,10 @@ from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from nolearn.lasagne import NeuralNet
 from sklearn.cross_validation import train_test_split
+from sklearn.grid_search import GridSearchCV
 
 NODES = 10
-TEST_SIZE = 0.2
+# TEST_SIZE = 0.2
 
 
 def build_nn(df=None, class_column_name=None):
@@ -37,25 +38,40 @@ def build_nn(df=None, class_column_name=None):
                          % class_column_name)
 
     df = df.sample(frac=1).reset_index(drop=True)
-    df_train, df_test = train_test_split(df, TEST_SIZE)
+    df_train, df_test = train_test_split(df)#, TEST_SIZE)
 
     # Remove the classification column from the dataframe
-    x = df_train.copy()
-    x.drop(class_column_name, axis=1, inplace=True)
-    x = x.values
-    y = df_train[class_column_name].values
-    y = y.astype(np.int32)
+    x_train = df_train.copy()
+    x_train.drop(class_column_name, axis=1, inplace=True)
+    x_train = x_train.values
+    y_train = df_train[class_column_name].values
+    y_train = y_train.astype(np.int32)
 
     # Create classification model
-    l = InputLayer(shape=(None, x.shape[1]))
+    net = NeuralNet(layers = [('input', InputLayer),
+			      ('hidden0', DenseLayer),
+			      ('hidden1', DenseLayer),
+			      ('output', DenseLayer)],
+		    input_shape = (None, x_train.shape[1]),
+                    hidden0_num_units = NODES,
+                    hidden0_nonlinearity = nonlinearities.softmax,
+                    hidden1_num_units = NODES,
+                    hidden1_nonlinearity = nonlinearities.softmax,
+                    output_num_units = len(np.unique(y_train)),
+                    output_nonlinearity = nonlinearities.softmax,
+                    update_learning_rate = 0.1,
+                    verbose = 1,
+                    max_epochs = 100)
 
-    l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
-    # l = DropoutLayer(l, p=.2)
-    # l = DenseLayer(l, num_units=NODES, nonlinearity=nonlinearities.softmax)
+    param_grid = {'hidden0_num_units': [4, 17, 25],
+                  'higgen0_nonlinearity': 
+                  [nonlinearities.sigmoid, nonlinearities.softmax],
+                  'hidden1_num_units': [4, 17, 25],
+                  'higgen1_nonlinearity': 
+                  [nonlinearities.sigmoid, nonlinearities.softmax],
+                  'update_learning_rate': [0.01, 0.1, 0.5]}
+    grid_search = GridSearchCV(net, param_grid, verbose=0)
+    grid_search.fit(x_train, y_train)
 
-    l = DenseLayer(l, num_units=len(np.unique(y)),
-                   nonlinearity=nonlinearities.softmax)
-    net = NeuralNet(l, update_learning_rate=0.5, verbose=1,
-                    max_epochs=100000)
-    net.fit(x, y)
-    print(net.score(x, y))
+    #net.fit(x_train, y_train)
+    # print(net.score(x_train, y_train))
