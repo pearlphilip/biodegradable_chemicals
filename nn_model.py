@@ -2,6 +2,8 @@
 Construct a neural network model from a data frame
 """
 
+import pickle
+
 import numpy as np
 import pandas as pd
 from lasagne import nonlinearities
@@ -13,7 +15,7 @@ from sklearn.grid_search import GridSearchCV
 
 NODES = 10
 # TEST_SIZE = 0.2
-
+PICKLE = 'data.pkl'
 
 def build_nn(df=None, class_column_name=None):
     """
@@ -64,10 +66,10 @@ def build_nn(df=None, class_column_name=None):
                     max_epochs = 100)
 
     param_grid = {'hidden0_num_units': [4, 17, 25],
-                  'higgen0_nonlinearity': 
+                  'hidden0_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'hidden1_num_units': [4, 17, 25],
-                  'higgen1_nonlinearity': 
+                  'hidden1_nonlinearity': 
                   [nonlinearities.sigmoid, nonlinearities.softmax],
                   'update_learning_rate': [0.01, 0.1, 0.5]}
     grid_search = GridSearchCV(net, param_grid, verbose=0)
@@ -75,3 +77,10 @@ def build_nn(df=None, class_column_name=None):
 
     #net.fit(x_train, y_train)
     # print(net.score(x_train, y_train))
+
+    with open(PICKLE, 'wb') as file:
+        pickle.dump(x_train, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(y_train, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(df_test, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(grid_search, file, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(net, file, pickle.HIGHEST_PROTOCOL)
